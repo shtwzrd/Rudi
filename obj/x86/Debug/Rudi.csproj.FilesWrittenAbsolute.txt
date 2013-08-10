@@ -1,0 +1,4 @@
+/home/brandon/Dev/workspaces/Rudi/bin/Debug/Rudi.exe.mdb
+/home/brandon/Dev/workspaces/Rudi/bin/Debug/Rudi.exe
+/home/brandon/Dev/workspaces/Rudi/obj/x86/Debug/Rudi.exe
+/home/brandon/Dev/workspaces/Rudi/obj/x86/Debug/Rudi.exe.mdb
