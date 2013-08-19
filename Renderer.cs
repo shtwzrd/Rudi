@@ -3,12 +3,12 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
-namespace OaqGraphics {
+namespace Rudi {
 
   public class Renderer {
 
-    uint vbo;
-    uint ebo;
+    VertexBufferObject vbo;
+    Texture realTexture;
     uint vao;
     int vshaderHandle, fshaderHandle, shaderProgramHandle;
 
@@ -23,25 +23,10 @@ namespace OaqGraphics {
     int shaderUniformModel;
     int shaderUniformView;
     int shaderUniformScreen;
+
+    Mesh quad = new Mesh(Mesh.DefaultMesh.Block);
     
-    //Hardcoded Shit
     static float counter;
-
-    //Quad
-    float[] vertData = {
-      //Position
-      //  X     Y
-     -0.5f, 0.5f, 0.0f, 0.0f,
-      0.5f, 0.5f, 1.0f, 0.0f,
-      0.5f,-0.5f, 1.0f, 1.0f,
-     -0.5f,-0.5f, 0.0f, 1.0f,
-    };
-
-    //EBO Indices for the Quad
-    uint[] elements = {
-      0, 1, 2,
-      2, 3, 0
-    };
 
     static readonly string vShaderSource = @"
       #version 110
@@ -50,14 +35,14 @@ namespace OaqGraphics {
       uniform mat4 view;
       uniform mat4 screen;
 
-      attribute vec2 position;
+      attribute vec3 position;
       attribute vec2 textureCoordIn;
 
       varying vec2 textureCoord;
 
       void main() {
         textureCoord = textureCoordIn;
-        gl_Position = screen * view * model * vec4(position, 0.0, 1.0);
+        gl_Position = screen * view * model * vec4(position, 1.0);
       }
       ";
     
@@ -74,29 +59,42 @@ namespace OaqGraphics {
       }
       ";
 
+    private void LoadScene(VertexBufferObject vbo)
+    {
+      //Place-holder map
+      int[,] map = {
+        { 1, 1, 1, 1, 1, 0, 1, 1, 0, 0 }, 
+        { 1, 1, 1, 1, 1, 1, 1, 0, 0, 0 }, 
+        { 1, 0, 0, 1, 1, 1, 1, 1, 1, 1 }, 
+        { 1, 1, 1, 1, 0, 0, 1, 1, 0, 0 }, 
+        { 0, 1, 1, 1, 1, 0, 1, 1, 0, 0 }, 
+        { 1, 1, 1, 0, 1, 0, 1, 1, 0, 0 }, 
+        { 1, 1, 1, 1, 1, 1, 1, 0, 1, 0 }, 
+        { 1, 1, 0, 1, 1, 1, 1, 0, 0, 0 }, 
+        { 1, 1, 1, 1, 0, 1, 1, 0, 0, 1 }, 
+        { 0, 1, 1, 1, 1, 0, 1, 1, 0, 0 }, 
+        { 1, 1, 1, 1, 1, 1, 1, 0, 0, 0 },
+      };
+
+      for(int x = 0; x < 10; x++)
+      {
+        for(int y = 0; y < 10; y++)
+        {
+
+        }
+      }
+
+    }                                 
+
     public Renderer()
     {
-      counter = 0;
-    }
+      counter = 30;
+      this.vbo = new VertexBufferObject(BufferUsageHint.StaticDraw, quad);
+      this.vbo.Update(quad);
+      this.vbo.Bind();
+      GL.Enable(EnableCap.DepthTest);
+      GL.DepthFunc(DepthFunction.Less);
 
-    public void Render()
-    {
-      GL.GenBuffers(1, out this.vbo);
-      GL.BindBuffer(BufferTarget.ArrayBuffer, this.vbo);
-
-      GL.BufferData(BufferTarget.ArrayBuffer,
-                    new IntPtr(vertData.Length * sizeof(float)),
-                    vertData,
-                    BufferUsageHint.StaticDraw);
-
-      GL.GenBuffers(1, out ebo);
-      GL.BindBuffer(BufferTarget.ElementArrayBuffer, this.ebo);
-
-      GL.BufferData(BufferTarget.ElementArrayBuffer,
-                    new IntPtr(elements.Length * sizeof(uint)),
-                    elements,
-                    BufferUsageHint.StaticDraw);
-      
       this.vshaderHandle = GL.CreateShader(ShaderType.VertexShader);
       GL.ShaderSource(this.vshaderHandle, vShaderSource);
       GL.CompileShader(this.vshaderHandle);
@@ -139,49 +137,57 @@ namespace OaqGraphics {
       GL.EnableVertexAttribArray(shaderAttribPosition);
       GL.EnableVertexAttribArray(shaderAttribTexCoord);
 
+      
       GL.VertexAttribPointer(shaderAttribPosition,
-                             2,
+                             3,
                              VertexAttribPointerType.Float,
                              false,
-                             4 * sizeof(float),
+                             TexturedVertex.SizeInBytes,
                              0);
 
       GL.VertexAttribPointer(shaderAttribTexCoord,
                              2,
                              VertexAttribPointerType.Float,
                              false,
-                             4 * sizeof(float),
-                             2 * sizeof(float));
+                          TexturedVertex.SizeInBytes,
+                          Vector3.SizeInBytes);
 
+      realTexture = new Texture("content/hello1.tif", Texture.TextureParameterState.LinearClamp); 
+      GL.Uniform1(this.shaderUniformSampler, 0); 
+      GL.BindVertexArray(0);
+    }
+
+    public void Render()
+    {
+      this.vbo.Update(quad);
+      this.vbo.Bind();
+      GL.BindVertexArray(this.vao); 
       
-      Texture realTexture = new Texture("content/hello1.tif");
       GL.BindTexture(TextureTarget.Texture2D, realTexture.Handle);
       
       GL.ActiveTexture(TextureUnit.Texture0);
-      GL.Uniform1(this.shaderUniformSampler, 0);
 
-      //Fake affine transform stuff
-
+      //Transforms
+      Matrix4 rotY;
       Matrix4.CreateRotationZ(counter, out model);
+      Matrix4.CreateRotationY(counter, out rotY);
+      model = Matrix4.Mult(model, rotY);
 
       GL.UniformMatrix4(this.shaderUniformModel, false, ref model);
       GL.UniformMatrix4(this.shaderUniformView, false, ref view); 
       GL.UniformMatrix4(this.shaderUniformScreen, false, ref screen); 
-
-      Console.WriteLine("model: " + model + " view: " + view);
       
-      view = Matrix4.LookAt(new Vector3(1.2f, 1.2f, 1.2f),
-                     new Vector3(0.0f, 0.0f, 0.0f),
-                     new Vector3(0.0f, 0.0f, 1.0f));
 
-      screen = Matrix4.Perspective(45.0f, 800.0f / 600.0f, 0.5f, 40.0f);
+      view = Matrix4.Identity;
 
-      GL.DrawElements(BeginMode.Triangles,
-          this.elements.Length,
-          DrawElementsType.UnsignedInt,
-          this.elements);
-      
+      screen = Matrix4.CreateOrthographic(10, 5, -100f, 100f);
+
+      GL.DrawArrays(BeginMode.TriangleStrip,
+                    0,
+                    this.quad.Vertices.Length);
+
       counter += 0.01f;
+      GL.BindVertexArray(0);
     }
   }
 }

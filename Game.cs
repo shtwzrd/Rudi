@@ -6,7 +6,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Audio;
 using OpenTK.Audio.OpenAL;
 using OpenTK.Input;
-using OaqGraphics;
+using Rudi;
 
 namespace StarterKit
 {
@@ -29,7 +29,6 @@ namespace StarterKit
             base.OnLoad(e);
 
             GL.ClearColor(0.1f, 0.2f, 0.5f, 0.0f);
-            GL.Enable(EnableCap.DepthTest);
         }
 
         /// <summary>
@@ -42,11 +41,13 @@ namespace StarterKit
         {
             base.OnResize(e);
 
+            /**
             GL.Viewport(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, ClientRectangle.Height);
 
             Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4, Width / (float)Height, 1.0f, 64.0f);
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadMatrix(ref projection);
+            */
         }
 
         /// <summary>

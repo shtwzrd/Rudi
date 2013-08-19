@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using OpenTK.Graphics.OpenGL;
 
-namespace OaqGraphics {
+namespace Rudi {
 
   /// <summary>
   /// Represents a texture stored on the graphics card and encapsulates its
