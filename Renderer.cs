@@ -149,7 +149,7 @@ namespace Rudi {
                              2,
                              VertexAttribPointerType.Float,
                              false,
-                          TexturedVertex.SizeInBytes,
+                          sizeof(float) * 5,
                           Vector3.SizeInBytes);
 
       realTexture = new Texture("content/hello1.tif", Texture.TextureParameterState.LinearClamp); 

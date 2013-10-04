@@ -5,7 +5,6 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
 namespace Rudi {
-
   public class Mesh {
 
     public static Dictionary<string, Mesh> MeshCache =
@@ -34,7 +33,7 @@ namespace Rudi {
       //TODO
     }
 
-    
+
 
     public Mesh(DefaultMesh type)
     {
@@ -110,7 +109,7 @@ namespace Rudi {
       mesh[33].Position = new Vector3( 1.0f,-1.0f, 1.0f);    
       mesh[34].Position = new Vector3( 1.0f, 1.0f,-1.0f);    
       mesh[35].Position = new Vector3( 1.0f, 1.0f, 1.0f);    
-                                                           
+
       mesh[0].TextureCoordinate   = new Vector2(0.0f, 0.0f);
       mesh[1].TextureCoordinate   = new Vector2(1.0f, 0.0f);
       mesh[2].TextureCoordinate   = new Vector2(0.0f, 1.0f);

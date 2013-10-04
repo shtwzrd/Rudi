@@ -37,6 +37,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
     <Reference Include="OpenTK.GLControl">
       <HintPath>lib\OpenTK.GLControl.dll</HintPath>
     </Reference>

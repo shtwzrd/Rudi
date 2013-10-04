@@ -1,10 +1,12 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Xml.Serialization;
 using OpenTK;
 
 namespace Rudi {
 
-  [StructLayout(LayoutKind.Sequential)]
+  [Serializable]
+  [StructLayout(LayoutKind.Sequential, Pack=1)]
   public struct TexturedVertex {
     
     /// <summary>
@@ -25,7 +27,7 @@ namespace Rudi {
 
     public static int SizeInBytes {
       get {
-        return Vector3.SizeInBytes + Vector2.SizeInBytes;
+        return Marshal.SizeOf(new TexturedVertex());
       }
     }
 
